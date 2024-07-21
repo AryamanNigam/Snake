@@ -128,6 +128,17 @@ void free_list(node *head) {
     }
 }
 
+int check_collision(node *head) {
+    node *c = head->next;
+    while (c != NULL) {
+        if (head->sx == c->sx && head->sy == c->sy) {
+            return 1; 
+        }
+        c = c->next;
+    }
+    return 0; 
+}
+
 int main() {
     node *head = malloc(sizeof(node));
     if (head == NULL) {
@@ -149,8 +160,8 @@ int main() {
 
     int x = 0;
     int y = 0;
-    int height = 41;
-    int width = 156;
+    int height = 35;
+    int width = 110;
     char ans[10];
 
     initscr();
@@ -190,6 +201,10 @@ int main() {
             break;
         }
 
+        if (check_collision(head)) {
+            break;
+        }
+
         current = head;
         while (current != NULL) {
             mvwaddch(win, current->sy, current->sx, ' ');
@@ -215,7 +230,7 @@ int main() {
 
         update_time(&min, &sec, &last_clock);
         mvwprintw(win, 1, 1, "%02d:%02d", min, sec);
-        mvwprintw(win, 1, 142, "Score:%d", score);
+        mvwprintw(win, 1, 102, "Score:%d", score);
         wrefresh(win);
 
         Sleep(100); 
