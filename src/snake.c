@@ -42,7 +42,6 @@ node *growth(node *head) {
     node *temp = malloc(sizeof(node));
 
     if (temp == NULL) {
-
         return NULL;
     }
 
@@ -136,10 +135,32 @@ int check_collision(node *head) {
         }
         c = c->next;
     }
-    return 0; 
+    return 0;
+}
+
+int read_high_score(const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        return 0; 
+    }
+    int high_score;
+    fscanf(file, "%d", &high_score);
+    fclose(file);
+    return high_score;
+}
+
+void write_high_score(const char *filename, int high_score) {
+    FILE *file = fopen(filename, "w");
+    if (file) {
+        fprintf(file, "%d", high_score);
+        fclose(file);
+    }
 }
 
 int main() {
+    const char *high_score_file = "high_score.txt";
+    int high_score = read_high_score(high_score_file);
+
     node *head = malloc(sizeof(node));
     if (head == NULL) {
         return -1;
@@ -160,8 +181,8 @@ int main() {
 
     int x = 0;
     int y = 0;
-    int height = 35;
-    int width = 110;
+    int height = 31;
+    int width = 106;
     char ans[10];
 
     initscr();
@@ -230,10 +251,15 @@ int main() {
 
         update_time(&min, &sec, &last_clock);
         mvwprintw(win, 1, 1, "%02d:%02d", min, sec);
-        mvwprintw(win, 1, 102, "Score:%d", score);
+        mvwprintw(win, 1, 92, "Score:%d", score);
         wrefresh(win);
 
         Sleep(100); 
+    }
+
+    if (score > high_score) {
+        high_score = score;
+        write_high_score(high_score_file, high_score);
     }
 
     wclear(win);
@@ -243,7 +269,8 @@ int main() {
     WINDOW *gameoverwin = newwin(10, 40, (height / 2) - 5, (width / 2) - 20);
     box(gameoverwin, 0, 0);
     mvwprintw(gameoverwin, 3, 8, "Game over, your score was %d", score);
-    mvwprintw(gameoverwin, 5, 8, "Your time was %02d:%02d", min, sec);
+    mvwprintw(gameoverwin, 4, 8, "Your time was %02d:%02d", min, sec);
+    mvwprintw(gameoverwin, 5, 8, "High score: %d", high_score);
     wrefresh(gameoverwin);
     wgetch(gameoverwin);
     delwin(gameoverwin);

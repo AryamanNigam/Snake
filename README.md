@@ -5,5 +5,7 @@ This is a snake game that is implemented in C using the ncurses library. You can
 ```
 git clone https://github.com/AryamanNigam/Snake
 cd Snake
-gcc ./src/Snake.c -o Snake.exe
+gcc ./src/Snake.c -o Snake.exe -lncurses
 ```
+## Demo
+![Demo](assets/Demo.gif)
