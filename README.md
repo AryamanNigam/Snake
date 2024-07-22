@@ -8,4 +8,4 @@ cd Snake
 gcc ./src/Snake.c -o Snake.exe -lncurses
 ```
 ## Demo
-![Demo](assets/Demo.gif)
+![Snake_Gif](assets/Snake_Demo.gif)
