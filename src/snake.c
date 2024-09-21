@@ -40,8 +40,6 @@ void update_time(int *min, int *sec, struct timeval *last_time) {
     }
 }
 
-
-
 node *growth(node *head) {
     node *c = head;
     node *temp = malloc(sizeof(node));
@@ -184,7 +182,7 @@ int main() {
     int min = 0, sec = 0;
 
     struct timeval last_time;
-    gettimeofday(&last_time, NULL);  // Initialize last_time with the current time
+    gettimeofday(&last_time, NULL);
 
     int x = 0;
     int y = 0;
