@@ -1,8 +1,9 @@
-#include <ncurses/ncurses.h>
+#include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <windows.h>
+#include <unistd.h> 
+#include <sys/time.h>  
 
 typedef enum {
     LEFT,
@@ -23,19 +24,23 @@ typedef struct {
     int ay;
 } apple;
 
-void update_time(int *min, int *sec, clock_t *last_clock) {
-    clock_t current_clock = clock();
-    double elapsed_time = (double)(current_clock - *last_clock) / CLOCKS_PER_SEC;
+void update_time(int *min, int *sec, struct timeval *last_time) {
+    struct timeval current_time;
+    gettimeofday(&current_time, NULL); 
 
+    double elapsed_time = (current_time.tv_sec - last_time->tv_sec) + (current_time.tv_usec - last_time->tv_usec) / 1000000.0;
+    
     if (elapsed_time >= 1.0) {
         *sec += (int)elapsed_time;
         if (*sec >= 60) {
             *min += *sec / 60;
             *sec %= 60;
         }
-        *last_clock = current_clock;
+        *last_time = current_time;  
     }
 }
+
+
 
 node *growth(node *head) {
     node *c = head;
@@ -157,6 +162,7 @@ void write_high_score(const char *filename, int high_score) {
     }
 }
 
+
 int main() {
     const char *high_score_file = "high_score.txt";
     int high_score = read_high_score(high_score_file);
@@ -165,7 +171,6 @@ int main() {
     if (head == NULL) {
         return -1;
     }
-    node *current;
 
     head->sx = 75;
     head->sy = 20;
@@ -177,13 +182,14 @@ int main() {
 
     srand(time(NULL));
     int min = 0, sec = 0;
-    clock_t last_clock = clock();
+
+    struct timeval last_time;
+    gettimeofday(&last_time, NULL);  // Initialize last_time with the current time
 
     int x = 0;
     int y = 0;
     int height = 31;
     int width = 106;
-    char ans[10];
 
     initscr();
     cbreak();
@@ -226,7 +232,7 @@ int main() {
             break;
         }
 
-        current = head;
+        node *current = head;
         while (current != NULL) {
             mvwaddch(win, current->sy, current->sx, ' ');
             current = current->next;
@@ -249,12 +255,12 @@ int main() {
             score++;
         }
 
-        update_time(&min, &sec, &last_clock);
+        update_time(&min, &sec, &last_time);  // Pass last_time of type 'struct timeval'
         mvwprintw(win, 1, 1, "%02d:%02d", min, sec);
         mvwprintw(win, 1, 92, "Score:%d", score);
         wrefresh(win);
 
-        Sleep(100); 
+        usleep(100000); 
     }
 
     if (score > high_score) {
